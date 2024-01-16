@@ -1,13 +1,52 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import { BrowserRouter } from "react-router-dom";
+import axios from "axios";
+import store from "./store/bigPie";
+import { Provider } from "react-redux";
+
+console.log(process.env);
+
+axios.defaults.baseURL = process.env.REACT_APP_SERVER_URL;
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    /*
+      if token exists we edit the request
+      adding headers
+      and sending the request to the server
+    */
+    config.headers["x-auth-token"] = token;
+    /*
+      headers = {
+        x-auth-token:token
+      }
+    */
+  }else{
+    const sessionToken= sessionStorage.getItem("token");
+     if(sessionToken){
+     config.headers["x-auth-token"] = sessionToken;
+     }
+  }
+  return config;
+});
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );
 
